@@ -1,1 +1,1 @@
-# admin-part
+# admin-partitions
