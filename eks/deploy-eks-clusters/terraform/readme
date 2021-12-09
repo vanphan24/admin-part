@@ -80,6 +80,13 @@ DEPLOY CONSUL SERVERS TO EKS SERVER CLUSTER
 
   Notice only "default" partition exists.
 
+  Note: Without a higher priviledge ACL token, you will have limited view. For testing/demo purposes, you can log on with the ACL bootstrap token.
+  
+  To retrieve the bootstrap token, run: 
+   
+  kubectl get secrets/consul-consul-bootstrap-acl-token --template='{{.data.token | base64decode }}'
+   
+
 DEPLOY CONSUL CLIENT 1 ONTO EKS CLIENT CLUSTER 1
 
 - Set context for the EKS Client 1 cluster:
@@ -113,7 +120,7 @@ DEPLOY CONSUL CLIENT 1 ONTO EKS CLIENT CLUSTER 1
       
    b) Edit the "k8sAuthMethodHost" field to reflect the EKS API server's IP/DNS name of the Client 1 EKS Cluster. You can retreive the DNS name by running: 
   
-      kubectl config view -o jsonpath="{.clusters[?(@.name=='<Consul-Client-1-EKS-cluster-name>')].cluster.server}"
+      kubectl config view -o jsonpath="{.clusters[?(@.name=='<Consul-Client-1-EKS-cluster-name>')].cluster.server}" 
   
   Example inputs for the helm-client-team1.yaml file:
   
@@ -147,12 +154,7 @@ DEPLOY CONSUL CLIENT 1 ONTO EKS CLIENT CLUSTER 1
   consul-consul-mesh-gateway-7b9b598c8d-zmfx9                       2/2     Running   0          103s
   consul-consul-webhook-cert-manager-6bd65f67f7-rldbb               1/1     Running   0          103s
 
-- View in Consul UI on browser. You will need the login to the UI with a higher priviledge ACL token. For demo/test purposes, you use the bootstrap token that
-  that was generated on the Consul server EKS cluster. To retrieve the token, run: 
-   
-   kubectl get secrets/consul-consul-bootstrap-acl-token --context <Consul-Server-EKS-cluster-name> --template='{{.data.token | base64decode }}'
-   
-  Once logged onto browser, you should bee a new "team1" admin partition was created in the Admin Partition box. 
+- View in Consul UI on browser. You should see a new "team1" admin partition was created in the Admin Partition box. 
   This partition name was set in the client helm values file: helm-client-team1.yaml
 
 
@@ -208,7 +210,7 @@ DEPLOY CONSUL CLIENT 2 ONTO EKS CLIENT CLUSTER 2 (this is mostly a repeat of cli
   helm install consul hashicorp/consul -f helm-client-team2.yaml
   
 - Once successfully deployed and joined to server cluster, view in Consul browser. 
-  You should bee a new team2 admin partition was created in the Admin Partition box.   
+  You should see a new "team2" admin partition was created in the Admin Partition box.   
 
 DEPLOY SERVICES
 
@@ -221,7 +223,7 @@ DEPLOY SERVICES
   kubectl apply -f counting.yaml
   kubectl apply -f dashboard.yaml 
   
-- View services in Consul UI, under team1 parttion. Two services should show up.  
+- View services in Consul UI, under team1 partition. Two services should show up.  
   
 - View counting app in browser:
 
