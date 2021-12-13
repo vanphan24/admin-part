@@ -6,24 +6,19 @@ within the same terminal.
 #CONSUL SERVER
 #################
 
-1) Run Install_Consul_Server.sh to deploy Consul Server
+1) Run install_consul_server.sh to deploy Consul Server
 
-  ./Install_Consul_Server.sh
+  ./install_consul_server.sh
 
 2) Get External-IP (or DNS name) of the Consul server's "consul-consul-partition-service" 
   
-  kubectl get services
-  NAME                                 TYPE           CLUSTER-IP       EXTERNAL-IP                                                                PORT(S)                                                                   AGE
-  consul-consul-connect-injector-svc   ClusterIP      172.20.114.128   <none>                                                                     443/TCP                                                                   18s
-  consul-consul-controller-webhook     ClusterIP      172.20.43.214    <none>                                                                     443/TCP                                                                   18s
-  consul-consul-dns                    ClusterIP      172.20.186.241   <none>                                                                     53/TCP,53/UDP                                                             18s
-  consul-consul-mesh-gateway           LoadBalancer   172.20.212.5     a00a823716a7d4597b68b65072f970b6-1765211840.eu-north-1.elb.amazonaws.com   443:31218/TCP                                                             18s
-  consul-consul-partition-service      LoadBalancer   172.20.138.45    a45c0d48015ed418fbebb1154604f20c-163347652.eu-north-1.elb.amazonaws.com    8501:31819/TCP,8301:31259/TCP,8300:32170/TCP                              18s
-  consul-consul-server                 ClusterIP      None             <none>                                                                     8501/TCP,8301/TCP,8301/UDP,8302/TCP,8302/UDP,8300/TCP,8600/TCP,8600/UDP   18s
-  consul-consul-ui                     LoadBalancer   172.20.86.24     a147f1516f6874a91851f398f7034527-38406048.eu-north-1.elb.amazonaws.com     443:31865/TCP                                                             18s
-  kubernetes                           ClusterIP      172.20.0.1       <none>                                                                     443/TCP                                                                   50m
-
-  Make a note of the External-IP of the "consul-consul-partition-service". We will use in the next couple of steps.
+  kubectl get services consul-consul-partition-service
+  NAME                                 TYPE           CLUSTER-IP       EXTERNAL-IP                                                                                                                                            
+  consul-consul-partition-service      LoadBalancer   172.20.138.45    a45c0d48015ed418fbebb1154604f20c-163347652.eu-north-1.elb.amazonaws.com    
+  
+  
+  
+  Note: Make a note of the External-IP of the "consul-consul-partition-service". We will use in the next couple of steps.
 
 
 #################
@@ -58,9 +53,9 @@ within the same terminal.
     join: [ "a45c0d48015ed418fbebb1154604f20c-163347652.eu-north-1.elb.amazonaws.com" ]
 
 
-5) Run Install_Consul_Client1.sh script to deploy Consul Client1
+5) Run Iinstall_consul_client1.sh script to deploy Consul Client1
 
-  ./Install_Consul_Client1.sh
+  ./install_consul_client1.sh
   
   
   
@@ -100,5 +95,54 @@ within the same terminal.
 8) 5) Run Install_Consul_Client2.sh to deploy Consul Client2
 
 
+Consul should now be install with two separate Kubernetes Clusters belonging to two separate Consul partitions (team1 and team2) 
+Teams/tenants can deploy their services in their respective K8s clusters and will be completely isolated from teams and services
+in other partitions.
 
+#########
+# VIEW UI
+#########
 
+To view the Consul UI with a browser, use the EXTERNAL-IP of the consul ui service. 
+Note: TLS is enabled in this example, therefore use https:// with port 443.
+
+  kubectl get services consul-consul-ui --context $EKS_CLUSTER_SERVER_CTX
+  NAME               TYPE           CLUSTER-IP       EXTERNAL-IP                                                                PORT(S)         
+  consul-consul-ui   LoadBalancer   172.20.183.226   a4f396d083ebe43559e2e29582ea3b35-1404433695.eu-north-1.elb.amazonaws.com   443:32563/TCP  
+
+For demo purposes, you can use the boostrap ACL token to log ontn UI. Token can be retrieve with:
+
+  kubectl get secrets/consul-consul-bootstrap-acl-token --template='{{.data.token | base64decode }}' --context $EKS_CLUSTER_SERVER_CTX
+
+In the UI, notice you can toggle between partitions using the Admin Partition box in the upper left side.
+
+#################################
+# CROSS PARTITION COMMUNICATION
+#################################
+
+This is an example showing a simple app that has a frontend service in the "team1" partition that connects to a backend service in  thw "team1" partition.
+We will run through the steps manually so show you exactly how it works.
+
+Navigate to the apps/fakeapp folder.
+
+1) Change context to Kubernetes Client 1 cluster.
+
+   kubectl config use-context $EKS_CLUSTER_CLIENT1_CTX
+   
+2) Deploy frontend app.
+
+   kubectl apply -f frontend.yaml
+
+   You should notice the frontend service appear in the Services window from the team1 partition.
+
+3) Change context to Kubernetes Client 2 cluster.
+
+   kubectl config use-context $EKS_CLUSTER_CLIENT2_CTX
+   
+4) Deploy backend app.
+
+   kubectl apply -f backend.yaml
+
+5) Export backend service from team2 to team1.
+
+   
