@@ -18,7 +18,7 @@ within the same terminal.
   
   
   
-  Note: Make a note of the External-IP of the "consul-consul-partition-service". We will use in the next couple of steps.
+  Note: On a notepad, copy/paste the External-IP of the "consul-consul-partition-service". We will use in the next couple of steps.
 
 
 #################
@@ -26,7 +26,7 @@ within the same terminal.
 #################
 
   
-3) Get DNS name of EKS API Server of Client 1. Make a note of the output. We will use this to get the next step.
+3) Get DNS name of EKS API Server of Client 1. Copy/paste the output onto a notepad. We will use this to get the next step.
    
    kubectl config view -o jsonpath="{.clusters[?(@.name=='$EKS_CLUSTER_CLIENT1_CTX')].cluster.server}" | sed 's/https:\/\///'
 
@@ -53,7 +53,7 @@ within the same terminal.
     join: [ "a45c0d48015ed418fbebb1154604f20c-163347652.eu-north-1.elb.amazonaws.com" ]
 
 
-5) Run Iinstall_consul_client1.sh script to deploy Consul Client1
+5) Run install_consul_client1.sh script to deploy Consul Client 1
 
   ./install_consul_client1.sh
   
@@ -92,9 +92,10 @@ within the same terminal.
     join: [ "a45c0d48015ed418fbebb1154604f20c-163347652.eu-north-1.elb.amazonaws.com" ]
 
 
-8) 5) Run Install_Consul_Client2.sh to deploy Consul Client2
+8) 5) Run install_consul_client2.sh to deploy Consul Client 2
 
-
+      ./install_consul_client2.sh
+      
 Consul should now be install with two separate Kubernetes Clusters belonging to two separate Consul partitions (team1 and team2) 
 Teams/tenants can deploy their services in their respective K8s clusters and will be completely isolated from teams and services
 in other partitions.
@@ -127,13 +128,17 @@ Navigate to the apps/fakeapp folder.
 
 1) Change context to Kubernetes Client 1 cluster.
 
-   kubectl config use-context $EKS_CLUSTER_CLIENT1_CTX
+  kubectl config use-context $EKS_CLUSTER_CLIENT1_CTX
    
 2) Deploy frontend app.
 
-   kubectl apply -f frontend.yaml
+   kubectl apply -f frontend.yaml   
 
    You should notice the frontend service appear in the Services window from the team1 partition.
+
+3) Export services from partition "team1" to parition "team2".
+   
+   kubectl apply -f export-front.yaml
 
 3) Change context to Kubernetes Client 2 cluster.
 
@@ -143,6 +148,7 @@ Navigate to the apps/fakeapp folder.
 
    kubectl apply -f backend.yaml
 
-5) Export backend service from team2 to team1.
-
+5) Export services from partition "team2" to parition "team1".
+ 
+   kubectl apply -f export-back.yaml
    
