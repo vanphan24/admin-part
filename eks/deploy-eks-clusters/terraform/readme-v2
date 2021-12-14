@@ -12,13 +12,12 @@ within the same terminal.
 
 2) Get External-IP (or DNS name) of the Consul server's "consul-consul-partition-service" 
   
-  kubectl get services consul-consul-partition-service
+  kubectl get services consul-consul-partition-service --context $EKS_CLUSTER_SERVER_CTX
   NAME                                 TYPE           CLUSTER-IP       EXTERNAL-IP                                                                                                                                            
   consul-consul-partition-service      LoadBalancer   172.20.138.45    a45c0d48015ed418fbebb1154604f20c-163347652.eu-north-1.elb.amazonaws.com    
   
   
-  
-  Note: On a notepad, copy/paste the External-IP of the "consul-consul-partition-service". We will use in the next couple of steps.
+  Note: On a notepad, copy/paste your output for the External-IP of the "consul-consul-partition-service". We will use in the next couple of steps.
 
 
 #################
@@ -33,10 +32,10 @@ within the same terminal.
 4) Edit helm-client-team1.yaml file:
   
    a) Edit both the "hosts" and "join" fields to reflect the External-IP (or DNS name) of the consul-consul-partition-service on the Server EKS cluster. 
-      You should have noted the External-IP was mentioned in the previous step 2.
+      You should have noted the External-IP was mentioned in the previous STEP 2.
       
    b) Edit the "k8sAuthMethodHost" field to reflect the EKS API server's IP/DNS name of the Client 1 EKS Cluster. 
-      You retreived the EKS API server DNS name from step 3. 
+      You retreived the EKS API server DNS name from STEP 3. 
       
   
   Example inputs for the helm-client-team1.yaml file:
@@ -124,31 +123,52 @@ In the UI, notice you can toggle between partitions using the Admin Partition bo
 This is an example showing a simple app that has a frontend service in the "team1" partition that connects to a backend service in  thw "team1" partition.
 We will run through the steps manually so show you exactly how it works.
 
-Navigate to the apps/fakeapp folder.
 
-1) Change context to Kubernetes Client 1 cluster.
-
-  kubectl config use-context $EKS_CLUSTER_CLIENT1_CTX
    
-2) Deploy frontend app.
+1) Deploy frontend app.
 
-   kubectl apply -f frontend.yaml   
+   kubectl apply -f apps/fakeapp/frontend.yaml --context $EKS_CLUSTER_CLIENT1_CTX 
 
-   You should notice the frontend service appear in the Services window from the team1 partition.
-
-3) Export services from partition "team1" to parition "team2".
+   You should notice the frontend service appear in the UI -> Services window from the team1 partition.
    
-   kubectl apply -f export-front.yaml
-
-3) Change context to Kubernetes Client 2 cluster.
-
-   kubectl config use-context $EKS_CLUSTER_CLIENT2_CTX
+2) Export services from partition "team1" to parition "team2".
    
-4) Deploy backend app.
+   kubectl apply -f apps/fakeapp/export-front.yaml --context $EKS_CLUSTER_CLIENT1_CTX   
+   
+3) Deploy backend app.
 
-   kubectl apply -f backend.yaml
-
-5) Export services from partition "team2" to parition "team1".
+   kubectl apply -f apps/fakeapp/backend.yaml --context $EKS_CLUSTER_CLIENT2_CTX
+   
+   You should notice the backend service appear in the UI -> Services window from the team2 partition.
  
-   kubectl apply -f export-back.yaml
+4) Export services from partition "team2" to parition "team1".
+ 
+   kubectl apply -f apps/fakeapp/export-back.yaml --context $EKS_CLUSTER_CLIENT2_CTX
    
+5) View fakeapp service using EXTERNAL-IP:
+
+   kubectl get service frontend --context $EKS_CLUSTER_CLIENT1_CTX
+
+   Open browser and enter the EXTERNAL-IP address and append port 9090 and /ui path to the URL.
+   Note: Note: AWS may take a few mins for the EXTERNAL-IP DNS name to resolve. Give it some time.
+   
+   http://<EXTERNAL-IP>:9090/ui
+   
+  You should see two boxes in grey color, depicting that there is connectivity. 
+  If the boxes are in red, that means the frontend service is not able to reach the backend service.
+
+
+  
+
+
+
+
+5) View fakeapp service using EXTERNAL-IP.
+
+   kubectl get service frontend --context $EKS_CLUSTER_CLIENT1_CTX
+   
+6) Open browser and enter the EXTERNAL-IP address and append port 9090 and /ui path to the URL.
+ 
+   http://<EXTERNAL-IP>:9090/ui
+
+   The browser should now show a connection between the frontend service and backend service. No longer red.
