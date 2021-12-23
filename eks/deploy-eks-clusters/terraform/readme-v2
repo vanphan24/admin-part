@@ -123,7 +123,9 @@ In the UI, notice you can toggle between partitions using the Admin Partition bo
 This is an example showing a simple app that has a frontend service in the "team1" partition that connects to a backend service in  thw "team1" partition.
 We will run through the steps manually so show you exactly how it works.
 
+0) Deploy Proxy-default (or Service-default to specify granular service) to send frontend traffic to Mesh GW.
 
+   kubectl apply -f proxydefault.yaml --context $EKS_CLUSTER_CLIENT1_CTX   
    
 1) Deploy frontend app.
 
