@@ -127,32 +127,36 @@ In the UI, notice you can toggle between partitions using the Admin Partition bo
 
 This is an example showing a simple app that has a frontend service in the "team1" partition that connects to a backend service in  thw "team1" partition.
 We will run through the steps manually so show you exactly how it works.
-
-0) Deploy Proxy-default (or Service-default to specify granular service) to send frontend traffic to Mesh GW.
-
-   kubectl apply -f proxydefault.yaml --context $EKS_CLUSTER_CLIENT1_CTX   
+ 
    
 1) Deploy frontend app.
 
    kubectl apply -f apps/fakeapp/frontend.yaml --context $EKS_CLUSTER_CLIENT1_CTX 
 
    You should notice the frontend service appear in the UI -> Services window from the team1 partition.
-   
-2) Export services from partition "team1" to parition "team2".
-   
-   kubectl apply -f apps/fakeapp/export-front.yaml --context $EKS_CLUSTER_CLIENT1_CTX   
-   
-3) Deploy backend app.
+
+2) Deploy backend app.
 
    kubectl apply -f apps/fakeapp/backend.yaml --context $EKS_CLUSTER_CLIENT2_CTX
    
    You should notice the backend service appear in the UI -> Services window from the team2 partition.
+
+3) Export services from partition "team1" to parition "team2".
+   
+   kubectl apply -f apps/fakeapp/export-front.yaml --context $EKS_CLUSTER_CLIENT1_CTX   
+   
+
  
 4) Export services from partition "team2" to parition "team1".
  
    kubectl apply -f apps/fakeapp/export-back.yaml --context $EKS_CLUSTER_CLIENT2_CTX
-   
-5) View fakeapp service using EXTERNAL-IP:
+
+5) Deploy Proxy-default (or Service-default to specify granular service) to send frontend traffic to Mesh GW.
+
+   kubectl apply -f proxydefault.yaml --context $EKS_CLUSTER_CLIENT1_CTX   
+
+
+6) View fakeapp service using EXTERNAL-IP:
 
    kubectl get service frontend --context $EKS_CLUSTER_CLIENT1_CTX
 
@@ -165,16 +169,12 @@ We will run through the steps manually so show you exactly how it works.
   If the boxes are in red, that means the frontend service is not able to reach the backend service.
 
 
-  
 
-
-
-
-5) View fakeapp service using EXTERNAL-IP.
+7) View fakeapp service using EXTERNAL-IP.
 
    kubectl get service frontend --context $EKS_CLUSTER_CLIENT1_CTX
    
-6) Open browser and enter the EXTERNAL-IP address and append port 9090 and /ui path to the URL.
+8) Open browser and enter the EXTERNAL-IP address and append port 9090 and /ui path to the URL.
  
    http://<EXTERNAL-IP>:9090/ui
 
