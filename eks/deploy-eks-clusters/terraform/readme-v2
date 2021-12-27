@@ -1,3 +1,8 @@
+Pre-reqs:
+- Helm installed (Download: https://github.com/helm/helm/releases).
+- Consul Enteprise license: Add license to the install_consul_server.sh script.
+- 3 EKS Clusters are available. A terraform script is available for you to deploy 3 EKS clusters to your desired AWS regions.
+
 Note: These scripts use environmental variables which only apply to a single terminal session. Therefore run the scripts and commands in these steps 
 within the same terminal.
 
