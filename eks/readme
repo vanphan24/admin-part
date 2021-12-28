@@ -1,0 +1,20 @@
+Here are the high level steps.
+
+1) Clone this repo: 
+
+   git clone https://github.com/vanphan24/admin-partitions.git
+
+2) Deploy 3 EKS clusters in your AWS envronments. If you don't have them, 
+   you can go to the admin-partitions/eks/deploy-eks-clusters/ folder to automatically deploy using Terraform.
+
+   Note: You'll need to have the follow resources available for the Terraform deployment to work. 
+    - You have terraform installed (https://www.terraform.io/downloads) 
+    - An existing VPC
+    - 3 public subnets, which are routeble to eachother (they should already be by default)
+    - If not already done, you have added labels as seen below to the each subnets. This allows Elastic LBs to be created by the EKS cluster.
+       Key – kubernetes.io/role/elb
+       Value – 1
+    - You should create a Security Group that has open access for all-inbound and all-outbound access for any source and destination.
+      This is for the purposes only, not production.  
+    
+3) Once the three EKS clusters are available, deploy consul by following readme step in the admin-partitions/eks/Deploy-consul/1.11GA/ folder.
