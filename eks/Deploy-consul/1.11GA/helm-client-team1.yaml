@@ -1,0 +1,51 @@
+global:
+  enabled: false
+  enableConsulNamespaces: true
+  image: hashicorp/consul-enterprise:1.11.0-ent
+  adminPartitions:
+    enabled: true
+    name: "team1"
+
+  enterpriseLicense:
+    secretName: license
+    secretKey: key
+
+  tls:
+    enabled: true
+    caCert:
+      secretName: consul-consul-ca-cert
+      secretKey: tls.crt
+    caKey:
+      secretName: consul-consul-ca-key
+      secretKey: tls.key
+
+  acls:
+    manageSystemACLs: true
+    bootstrapToken:
+      secretName: consul-consul-partitions-acl-token
+      secretKey: token
+
+externalServers:
+  enabled: true
+  hosts: [ "acc34d03e65fc4fcf865bb9377ca319d-1768418884.eu-north-1.elb.amazonaws.com" ]
+  tlsServerName: server.dc1.consul
+  k8sAuthMethodHost: "0B41ED62C06BA29A6A93367AA787231D.sk1.eu-north-1.eks.amazonaws.com"
+client:
+  enabled: true
+  exposeGossipPorts: true
+  join: [ "acc34d03e65fc4fcf865bb9377ca319d-1768418884.eu-north-1.elb.amazonaws.com" ]
+connectInject:
+  enabled: true
+  consulNamespaces:
+    mirroringK8S: true
+  envoyExtraArgs: --log-level trace
+
+controller:
+  enabled: true
+
+#meshGateway:
+#  enabled: true
+
+dns:
+  enabled: true
+  enableRedirection: true 
