@@ -20,16 +20,17 @@ Copy or clone the whole repo to your local system.
 # DEPLOY 3 EKS CLUSTERS
 #######################
 
- 1) In the terraform directory, edit the variable.tf file to reflect your desired vpc, region, subnets, security group. 
+ 1) In the admin-partitions/eks/deploy-eks-clusters/terraform/ directory, edit the variable.tf file to reflect your desired vpc, region, subnets, security group. 
     
     Note: It is recommended to not change the names of the EKS cluster because the scripts used to deploy Consul + Admin Partitions will 
     use these default names. Otherwise you'll need to edit to Consul install scripts as well to reflect your EKS cluster name.
     
- 2) From directory with the main.tf file, run: terraform init
+ 2) In the admin-partitions/eks/deploy-eks-clusters/terraform/ directory with the main.tf file, run: terraform init
  
- 3) From directory with the main.tf file, run: terraform apply
+ 3) In the admin-partitions/eks/deploy-eks-clusters/terraform/ directory with the main.tf file, run: terraform apply
 
 When complete, you should have 3 EKS clusters of which you can deploy Consul. 
-To install Consul with Admin Partitions, go to this folder: https://github.com/vanphan24/admin-partitions/tree/main/eks/Deploy-consul/1.11GA
+
+To install Consul with Admin Partitions, go to the admin-partitions/tree/main/eks/Deploy-consul/1.11GA folder.
 
 
