@@ -7,11 +7,29 @@ Pre-reqs:
 Note: These scripts use environmental variables which only apply to a single terminal session. Therefore run the scripts and commands in these steps 
 within the same terminal.
 
+################################################################
+# Customize the install scripts with your license and AWS region
+################################################################
+
+
+1) Edit the install_consul_server.sh, install_consul_client1.sh, install_consul_client2.sh files:
+
+   a) Your Enterprice Consul license.  
+   
+      export CONSUL_LICENSE=<ADD_YOUR_LICENSE_HERE>
+      #You can request a 30 day trial license here: https://www.hashicorp.com/products/consul/trial
+
+   b) Your desired AWS region. Example: 
+
+      export AWSREGION= eu-north-1
+
+
 
 
 #################
 #CONSUL SERVER
 #################
+
 
 
 1) Run install_consul_server.sh to deploy Consul Server:
