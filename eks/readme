@@ -1,4 +1,4 @@
-Here are the high level steps.
+Here are the high level steps to deploy Consul with Admin Partitions onto EKS.
 
 1) Clone this repo: 
 
