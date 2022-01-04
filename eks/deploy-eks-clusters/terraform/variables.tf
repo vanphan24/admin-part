@@ -9,9 +9,9 @@ variable "eks-vpc-id" {
 }
 
 variable "aws-region" {
-  description = "Desired aws region"
+  description = "Desired aws region, ex: eu-north-1"
   type        = string
-  default     = "eu-north-1"
+  default     = "Your-AWS-region"
 }
 
 variable "eks-subnet-id-1" {
